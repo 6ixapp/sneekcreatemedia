@@ -7,24 +7,15 @@ import Navbar from "../components/navbar"
 import { motion } from "framer-motion"
 import Image from "next/image"
 
-// Static imports for built-in optimization and blur placeholder
-import img1 from "../../public/images/hdr/1.jpg"
-import img2 from "../../public/images/HDR/2.jpg"
-import img3 from "../../public/images/HDR/3.jpg"
-import img4 from "../../public/images/HDR/4.jpg"
-import img5 from "../../public/images/HDR/5.jpg"
-import img6 from "../../public/images/HDR/6.jpg"
-import img7 from "../../public/images/HDR/2(1).jpg"
-
 export default function PhotosPage() {
   const photos = [
-    img1,
-    img2,
-    img3,
-    img4,
-    img5,
-    img6,
-    img7,
+    "/images/HDR/1.jpg",
+    "/images/HDR/2.jpg",
+    "/images/HDR/3.jpg",
+    "/images/HDR/4.jpg",
+    "/images/HDR/5.jpg",
+    "/images/HDR/6.jpg",
+    "/images/HDR/2(1).jpg",
     // Add more as needed
   ]
 
@@ -75,10 +66,8 @@ export default function PhotosPage() {
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover rounded-lg"
-                  quality={85}
-                  priority={index < 1}
-                  placeholder="blur"
-                  blurDataURL={src.blurDataURL}
+                  quality={100}
+                  priority={index < 2}
                 />
               </div>
             </motion.div>
