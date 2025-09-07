@@ -3,8 +3,9 @@
 import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
 import { useRef } from "react"
-import { Check, Sparkles, Video, Camera, Sun } from "lucide-react"
+import { Check, Video, Camera, Layers } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
 
 export default function Pricing() {
   const ref = useRef(null)
@@ -12,74 +13,57 @@ export default function Pricing() {
 
   const pricingPlans = [
     {
-      name: "Narrated Full Tour",
-      price: "$400",
-      description: "Full interior & exterior walkthrough",
+      name: "Premium Signature Reel",
+      price: "$500",
+      description: "Agent On Camera, 3D Text, Script Provided, Fast Paced Edits",
       features: [
-        "Agent On Camera with narration of the property",
-        "45-90 seconds",
-        "Background music & agent branding",
-        "Drone Clips",
-      ],
-      popular: false,
-      color: "from-blue-500 to-cyan-400",
-      shadowColor: "shadow-blue-500/20",
-      icon: Video,
-    },
-    {
-      name: "Signature Reel",
-      price: "$600",
-      description: "Short-form vertical video (Instagram/TikTok style)",
-      features: [
-        "30–60 seconds runtime",
-        "Fast-paced edits with music",
-        "Key highlights of the property",
-        "Drone Clips",
+        "Agent On Camera",
+        "3D Text",
+        "Script Provided",
+        "Fast Paced Edits",
       ],
       popular: true,
       color: "from-orange-500 to-amber-600",
       shadowColor: "shadow-orange-500/20",
       icon: Video,
+      href: "/sigature",
     },
     {
-      name: "Cinematic Video",
-      price: "$800",
-      description: "Wide-screen cinematic quality (16:9)",
+      name: "RMS, 3D Tour & HDR Photos",
+      price: "From $250",
+      description:
+        "Drone HDR Photos with Labels, Up to 50+ Photos (all inside/outside the house)",
       features: [
-        "45–90 seconds with music",
-        "Smooth gimbal movements & transitions",
-        "Perfect for websites & YouTube",
-        "Drone Clips",
+        "Drone HDR Photos with Labels",
+        "Up to 50+ Photos (interior & exterior)",
+        "0-1500 Sqft - $250",
+        "1500-3000 Sqft - $300",
+        "3000-4500 Sqft - $400",
       ],
-      popular: false,
-      color: "from-red-500 to-pink-600",
-      shadowColor: "shadow-red-500/20",
-      icon: Video,
-    },
-    {
-      name: "HDR Photos",
-      price: "$300",
-      description: "20–30 professionally edited photos",
-      features: ["High Dynamic Range (HDR) technique", "Bright, crisp interiors & exteriors", "Drone Photos"],
       popular: false,
       color: "from-purple-500 to-indigo-600",
       shadowColor: "shadow-purple-500/20",
       icon: Camera,
+      href: "/hdr",
     },
     {
-      name: "Day & Night Package",
-      price: "$900",
-      description: "Full day and twilight photo/video coverage",
+      name: "Monthly Video Package",
+      price: "From $1000",
+      description: "8 or 15 Videos Per Month. Consistent format. Fast Delivery.",
       features: [
-        "Showcases home in both lighting conditions",
-        "Golden hour visuals & twilight shots",
-        "Complete photo and video package",
-        "Premium editing and color grading",
+        "8 Videos Per Month - $1000",
+        "15 Videos Per Month - $1500",
+        "Streamlined, consistent video format",
+        "24 Hour turnaround time",
+        "Shoot 4-6 times a month",
+        "Does not include 3D Text/Graphics",
+        "For Possession, Pre-Construction, Listing & Similar Videos",
       ],
       popular: false,
-      color: "from-amber-500 to-yellow-400",
-      shadowColor: "shadow-amber-500/20",
-      icon: Sun,
+      color: "from-blue-500 to-cyan-400",
+      shadowColor: "shadow-blue-500/20",
+      icon: Layers,
+      href: "/monthly",
     },
   ]
 
@@ -139,7 +123,7 @@ export default function Pricing() {
                       {plan.price}
                     </span>
                   </div>
-                  <ul className="space-y-3">
+                  <ul className="space-y-3 mb-6">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-center">
                         <div
@@ -151,6 +135,14 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
+                  {/* Small "View More" button */}
+                  <Link href={plan.href}>
+                    <span
+                      className={`inline-block text-center rounded px-4 py-1.5 bg-gradient-to-r ${plan.color} text-white font-medium text-sm shadow-sm transition hover:scale-105 hover:shadow-lg active:scale-95`}
+                    >
+                      View More
+                    </span>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
