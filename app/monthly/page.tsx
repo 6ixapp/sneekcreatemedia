@@ -14,6 +14,10 @@ export default function GalleryPage() {
   const videos = [
     {
       title: "",
+      embedUrl: "https://player.vimeo.com/video/1116819059",
+    },
+    {
+      title: "",
       embedUrl: "https://player.vimeo.com/video/1116399180",
     },
     {

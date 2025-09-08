@@ -95,28 +95,7 @@ export default function CategoryPage() {
 }
 
       ],
-      photos: [
-        {
-          title: "Product Photography",
-          image:
-            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D",
-        },
-        {
-          title: "Brand Identity",
-          image:
-            "https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D",
-        },
-        {
-          title: "Corporate Portraits",
-          image:
-            "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y29ycG9yYXRlfGVufDB8fDB8fHww",
-        },
-        {
-          title: "Lifestyle Marketing",
-          image:
-            "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGlmZXN0eWxlJTIwcHJvZHVjdHxlbnwwfHwwfHx8MA%3D%3D",
-        },
-      ],
+      
     },
     "content-creation": {
       title: "Content Creation",
