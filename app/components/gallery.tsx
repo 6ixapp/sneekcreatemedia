@@ -38,7 +38,7 @@ export default function Gallery() {
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.8 }}
         >
-          Featured Work
+          Featured Work.
         </motion.h2>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {videos.map((video, index) => (
