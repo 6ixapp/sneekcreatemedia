@@ -35,7 +35,7 @@ export default function Page() {
       <h1 className="text-4xl font-bold mb-4">🚧 Under Maintenance 🚧</h1>
       <p className="text-lg max-w-xl">
         Our website is currently undergoing scheduled maintenance.  
-        We’ll be back shortly. Thank you for your patience!
+        We’ll be back shortly. Thank you for your patience! soon 
       </p>
     </main>
   );
