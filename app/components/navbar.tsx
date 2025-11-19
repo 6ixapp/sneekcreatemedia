@@ -54,6 +54,11 @@ export default function Navbar() {
           <Link href="#contact" className="text-white/80 transition-colors hover:text-white">
             Contact
           </Link>
+          <Link href="/booking">
+            <Button className="bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:from-orange-600 hover:to-amber-700 shadow-lg">
+              Book Now
+            </Button>
+          </Link>
         </nav>
 
         {/* Mobile Navigation */}
@@ -102,6 +107,14 @@ export default function Navbar() {
               onClick={() => setIsMenuOpen(false)}
             >
               Contact
+            </Link>
+            <Link
+              href="/booking"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Button className="w-full bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:from-orange-600 hover:to-amber-700 shadow-lg">
+                Book Now
+              </Button>
             </Link>
           </nav>
         </div>

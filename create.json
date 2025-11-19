@@ -1,0 +1,86 @@
+{
+    "name": "Booking Email to Google Calendar",
+    "modules": [
+      {
+        "id": 1,
+        "name": "Watch Booking Email",
+        "app": "gmail",
+        "action": "watchEmails",
+        "params": {
+          "criteria": "from:noreply@updates.sneekcreatemedia.com subject:'Booking Confirmed'"
+        }
+      },
+      {
+        "id": 2,
+        "name": "Extract Booking Details",
+        "app": "tools",
+        "action": "textParser",
+        "params": {
+          "text": "{{1.bodyPlain}}",
+          "patterns": [
+            {
+              "name": "Service",
+              "pattern": "Service\\s*(.*)"
+            },
+            {
+              "name": "Date",
+              "pattern": "Date\\s*(.*)"
+            },
+            {
+              "name": "Time",
+              "pattern": "Time\\s*(.*)"
+            },
+            {
+              "name": "Total Amount",
+              "pattern": "Total Amount\\s*(.*)"
+            },
+            {
+              "name": "Name",
+              "pattern": "Contact Information\\s*(.*?)\\s*📧"
+            },
+            {
+              "name": "Email",
+              "pattern": "📧\\s*(.*?)\\s*📞"
+            },
+            {
+              "name": "Phone",
+              "pattern": "📞\\s*(\\d+)"
+            }
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "name": "Create Calendar Event",
+        "app": "googleCalendar",
+        "action": "createEvent",
+        "params": {
+          "calendarId": "primary",
+          "summary": "Booking – {{2.Service}}",
+          "description": "Service: {{2.Service}}\nClient: {{2.Name}}\nEmail: {{2.Email}}\nPhone: {{2.Phone}}\nDate: {{2.Date}}\nTime: {{2.Time}}\nAmount: {{2.Total Amount}}\n\nBooking added automatically from email.",
+          "start": {
+            "dateTime": "{{2.Date}}T{{2.Time}}"
+          },
+          "end": {
+            "dateTime": "{{2.Date}}T{{addMinutes(2.Time, 60)}}"
+          }
+        }
+      }
+    ],
+    "links": [
+      {
+        "from_module": 1,
+        "to_module": 2
+      },
+      {
+        "from_module": 2,
+        "to_module": 3
+      }
+    ],
+    "triggers": [
+      {
+        "module_id": 1
+      }
+    ]
+  }
+  

@@ -15,17 +15,17 @@ export default function Gallery() {
     
 {
       title: "",
-      embedUrl: "https://player.vimeo.com/video/1116393463",
+      embedUrl: "https://player.vimeo.com/video/1135098063",
     },
 
 {
       title: "",
-      embedUrl: "https://player.vimeo.com/video/1086480161",
+      embedUrl: "https://player.vimeo.com/video/1135098251",
     },
     
     {
       title: "",
-      embedUrl: "https://player.vimeo.com/video/1085954269",
+      embedUrl: "https://player.vimeo.com/video/1116571698",
     },
   ]
 

@@ -135,14 +135,23 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  {/* Small "View More" button */}
-                  <Link href={plan.href}>
-                    <span
-                      className={`inline-block text-center rounded px-4 py-1.5 bg-gradient-to-r ${plan.color} text-white font-medium text-sm shadow-sm transition hover:scale-105 hover:shadow-lg active:scale-95`}
-                    >
-                      View More
-                    </span>
-                  </Link>
+                  {/* Buttons */}
+                  <div className="flex gap-2">
+                    <Link href={plan.href}>
+                      <span
+                        className={`inline-block text-center rounded px-3 py-1.5 bg-gradient-to-r ${plan.color} text-white font-medium text-sm shadow-sm transition hover:scale-105 hover:shadow-lg active:scale-95`}
+                      >
+                        View More
+                      </span>
+                    </Link>
+                    <Link href="/booking">
+                      <span
+                        className={`inline-block text-center rounded px-3 py-1.5 border border-white/20 bg-white/10 text-white font-medium text-sm shadow-sm transition hover:scale-105 hover:shadow-lg active:scale-95 hover:bg-white hover:text-zinc-900`}
+                      >
+                        Book Now
+                      </span>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
