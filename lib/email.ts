@@ -105,99 +105,143 @@ export async function sendBookingConfirmationEmail(bookingData: any) {
   const paymentMethodLabel = paymentMethod || 'Credit Card';
 
   // Email to customer
+  const senderIdentity = `SneekCreateMedia <${process.env.RESEND_FROM_EMAIL!}>`;
+
   const customerEmailData = {
-    from: process.env.RESEND_FROM_EMAIL!,
+    from: senderIdentity,
     to: [safeContact.email],
     subject: `Booking Confirmation · ${serviceInfo.name} (${safeBookingRef})`,
     html: `
       <!DOCTYPE html>
       <html lang="en">
-        <body style="margin:0;padding:0;background-color:#0f172a;font-family:'Helvetica Neue',Arial,sans-serif;color:#0f172a;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;padding:24px 0;">
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            @media only screen and (max-width: 600px) {
+              .container { width: 100% !important; }
+              .mobile-stack { display: block !important; width: 100% !important; }
+              .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }
+            }
+          </style>
+        </head>
+        <body style="margin:0;padding:0;background-color:#ffffff;font-family:'Helvetica Neue',Arial,sans-serif;color:#0f172a;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#ffffff;padding:20px 0;">
             <tr>
               <td align="center">
-                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background-color:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #e2e8f0;">
+                <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background-color:#ffffff;margin:0 auto;">
                   <tr>
-                    <td style="background:linear-gradient(120deg,#f97316,#fbbf24);padding:32px 24px;text-align:center;color:#ffffff;">
-                      <div style="font-size:44px;line-height:1;">🎉</div>
-                      <h1 style="margin:12px 0 4px;font-size:24px;">Booking Confirmed</h1>
-                      <p style="margin:0;font-size:16px;">${serviceInfo.name}</p>
-                      <p style="margin:14px 0 0;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;">Ref · ${safeBookingRef}</p>
+                    <td style="padding:0 0 32px;text-align:center;">
+                      <img src="https://www.sneekcreatemedia.com/images/logo.png" alt="Sneek Create Media" style="max-width:200px;height:auto;" />
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding:32px 28px 8px;background-color:#ffffff;">
-                      <p style="margin:0 0 20px;font-size:15px;color:#475569;">Hi ${safeContact.name}, we're excited to work with you. Here's a quick summary of your appointment.</p>
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0 12px;margin-bottom:12px;">
-                        <tr>
-                          <td style="width:50%;padding:16px;border:1px solid #f1f5f9;border-radius:12px;">
-                            <p style="margin:0 0 6px;font-size:11px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;">Appointment</p>
-                            <p style="margin:0;font-size:15px;color:#0f172a;font-weight:600;">${formattedDate}</p>
-                            <p style="margin:4px 0 0;font-size:13px;color:#475569;">${formattedTime}</p>
-                          </td>
-                          <td style="width:50%;padding:16px;border:1px solid #f1f5f9;border-radius:12px;">
-                            <p style="margin:0 0 6px;font-size:11px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;">Total</p>
-                            <p style="margin:0;font-size:20px;color:#0f172a;font-weight:700;">${amountDisplay}</p>
-                            <p style="margin:4px 0 0;font-size:13px;color:#475569;">${currency || 'USD'}</p>
-                          </td>
-                        </tr>
-                      </table>
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #f1f5f9;border-radius:12px;padding:18px;margin-bottom:20px;">
-                        <tr>
-                          <td style="vertical-align:top;">
-                            <p style="margin:0 0 6px;font-size:11px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;">Property</p>
-                            <p style="margin:0;font-size:15px;color:#0f172a;font-weight:600;">${safeAddress}</p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="padding-top:14px;border-top:1px solid #f1f5f9;">
-                            <p style="margin:0 0 6px;font-size:11px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;">Contact</p>
-                            <p style="margin:0;font-size:15px;color:#0f172a;font-weight:600;">${safeContact.name}</p>
-                            <p style="margin:4px 0 0;font-size:13px;color:#475569;">📧 ${safeContact.email}</p>
-                            <p style="margin:2px 0 0;font-size:13px;color:#475569;">📞 ${safeContact.phone}</p>
-                          </td>
-                        </tr>
-                      </table>
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:12px;background-color:#f5fbff;border:1px solid #d8eefc;padding:18px;margin-bottom:20px;">
-                        <tr>
-                          <td>
-                            <p style="margin:0 0 6px;font-size:11px;color:#0c4a6e;letter-spacing:0.08em;text-transform:uppercase;">Payment</p>
-                            <p style="margin:0;font-size:15px;color:#075985;font-weight:600;">${paymentStatusLabel}</p>
-                            <p style="margin:4px 0 0;font-size:13px;color:#0c4a6e;">Method: ${paymentMethodLabel}</p>
-                            ${transactionId ? `<p style="margin:4px 0 0;font-size:12px;color:#0c4a6e;font-family:monospace;">Transaction: ${transactionId}</p>` : ''}
-                            ${paymentIntent && paymentIntent !== transactionId ? `<p style="margin:4px 0 0;font-size:12px;color:#0c4a6e;font-family:monospace;">Payment Intent: ${paymentIntent}</p>` : ''}
-                          </td>
-                        </tr>
-                      </table>
-                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:12px;background-color:#fefce8;border:1px solid #fef08a;padding:18px;margin-bottom:20px;">
-                        <tr>
-                          <td>
-                            <p style="margin:0 0 10px;font-size:14px;color:#ca8a04;font-weight:600;">Next steps</p>
-                            <ul style="margin:0;padding-left:18px;color:#854d0e;font-size:13px;line-height:1.7;">
-                              <li>We'll send detailed prep instructions 24 hours ahead</li>
-                              <li>Expect a confirmation call 1 hour before arrival</li>
-                              <li>Need to reschedule? Reply to this email anytime</li>
-                </ul>
-                          </td>
-                        </tr>
-                      </table>
-                      ${safeContact.notes ? `
-                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-radius:12px;border:1px solid #f1f5f9;padding:18px;margin-bottom:20px;">
-                          <tr>
-                            <td>
-                              <p style="margin:0 0 6px;font-size:11px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;">Special instructions</p>
-                              <p style="margin:0;font-size:14px;color:#0f172a;">${formatMultiline(safeContact.notes)}</p>
-                            </td>
-                          </tr>
-                        </table>
-              ` : ''}
-                      <p style="margin:0;font-size:13px;color:#475569;">If anything looks incorrect, reply to this email and our team will help right away.</p>
+                    <td class="mobile-padding" style="padding:0 20px 32px;text-align:center;">
+                      <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#0f172a;">Booking Confirmed</h1>
+                      <p style="margin:0;font-size:16px;color:#64748b;">Reference: ${safeBookingRef}</p>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding:24px;background-color:#f8fafc;text-align:center;border-top:1px solid #e2e8f0;">
-                      <p style="margin:0 0 4px;font-size:13px;color:#64748b;">Need assistance? Email <a href="mailto:support@sneekcreatemedia.com" style="color:#f97316;text-decoration:none;">support@sneekcreatemedia.com</a> or call 1-800-SNEEK-CM.</p>
-                      <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;">Sneek Create Media · Professional Real Estate Media Team</p>
+                    <td class="mobile-padding" style="padding:0 20px;text-align:center;">
+                      <p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#334155;">Hello ${safeContact.name},</p>
+                      <p style="margin:0 0 32px;font-size:16px;line-height:1.6;color:#334155;">Thank you for booking with us. Your appointment has been confirmed. Here are the details:</p>
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                        <tr>
+                          <td style="text-align:center;">
+                            <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Service</p>
+                            <p style="margin:0;font-size:16px;font-weight:600;color:#0f172a;">${serviceInfo.name}</p>
+                          </td>
+                        </tr>
+                      </table>
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                        <tr>
+                          <td width="50%" style="width:50%;text-align:center;vertical-align:top;padding-right:10px;">
+                            <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Date</p>
+                            <p style="margin:0;font-size:16px;font-weight:600;color:#0f172a;">${formattedDate}</p>
+                          </td>
+                          <td width="50%" style="width:50%;text-align:center;vertical-align:top;padding-left:10px;">
+                            <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Time</p>
+                            <p style="margin:0;font-size:16px;font-weight:600;color:#0f172a;">${formattedTime}</p>
+                          </td>
+                        </tr>
+                      </table>
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                        <tr>
+                          <td style="text-align:center;">
+                            <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Location</p>
+                            <p style="margin:0;font-size:16px;color:#0f172a;max-width:300px;margin-left:auto;margin-right:auto;">${safeAddress}</p>
+                          </td>
+                        </tr>
+                      </table>
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                        <tr>
+                          <td style="text-align:center;">
+                            <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Contact Information</p>
+                            <p style="margin:0 0 4px;font-size:16px;color:#0f172a;">${safeContact.name}</p>
+                            <p style="margin:0 0 4px;font-size:15px;color:#475569;">${safeContact.email}</p>
+                            <p style="margin:0;font-size:15px;color:#475569;">${safeContact.phone}</p>
+                          </td>
+                        </tr>
+                      </table>
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+                        <tr>
+                          <td style="text-align:center;">
+                            <p style="margin:0 0 12px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Payment Details</p>
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                              <tr>
+                                <td style="padding-bottom:8px;text-align:center;">
+                                  <p style="margin:0;font-size:15px;color:#64748b;">Amount: <span style="font-weight:600;color:#0f172a;">${amountDisplay}</span></p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="padding-bottom:8px;text-align:center;">
+                                  <p style="margin:0;font-size:15px;color:#64748b;">Status: <span style="color:#0f172a;">${paymentStatusLabel}</span></p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td style="padding-bottom:8px;text-align:center;">
+                                  <p style="margin:0;font-size:15px;color:#64748b;">Method: <span style="color:#0f172a;">${paymentMethodLabel}</span></p>
+                                </td>
+                              </tr>
+                              ${
+                                transactionId
+                                  ? `
+                                    <tr>
+                                      <td style="text-align:center;">
+                                        <p style="margin:0;font-size:15px;color:#64748b;">Tx ID: <span style="color:#64748b;font-family:monospace;">${transactionId}</span></p>
+                                      </td>
+                                    </tr>
+                                  `
+                                  : ""
+                              }
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      ${
+                        safeContact.notes
+                          ? `
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+                              <tr>
+                                <td style="text-align:center;">
+                                  <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Special Instructions</p>
+                                  <p style="margin:0;font-size:15px;line-height:1.6;color:#0f172a;max-width:400px;margin-left:auto;margin-right:auto;">${formatMultiline(safeContact.notes)}</p>
+                                </td>
+                              </tr>
+                            </table>
+                          `
+                          : ""
+                      }
+                      <div style="border-top:1px solid #e2e8f0;padding-top:24px;text-align:center;">
+                        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#475569;">If you have any questions or need to make changes to your booking, please don't hesitate to contact us.</p>
+                        <p style="margin:0;font-size:15px;line-height:1.6;color:#475569;">We look forward to working with you!</p>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:32px 0;text-align:center;">
+                      <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#0f172a;">Sneek Create Media</p>
+                      <p style="margin:0 0 4px;font-size:13px;color:#64748b;">support@sneekcreatemedia.com</p>
+                      <p style="margin:0;font-size:13px;color:#64748b;">1-800-SNEEK-CM</p>
                     </td>
                   </tr>
                 </table>
@@ -211,7 +255,7 @@ export async function sendBookingConfirmationEmail(bookingData: any) {
 
   // Email to business owner
   const businessEmailData = {
-    from: process.env.RESEND_FROM_EMAIL!,
+    from: senderIdentity,
     to: [process.env.RESEND_TO_EMAIL!],
     subject: `New booking · ${serviceInfo.name} (${safeBookingRef})`,
     html: `
