@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
 
     // Generate unique booking reference
     const bookingRef = "BK" + Math.random().toString(36).substr(2, 9).toUpperCase();
-    
+
     // Validate and calculate final amount
     const finalAmount = totalAmount || serviceInfo.price;
-    
+
     // Validate amount range
     if (finalAmount < 0.50 || finalAmount > 100000) {
       return NextResponse.json(
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Stripe requires minimum $0.50 (50 cents) for charges
     // Ensure amount meets minimum requirement
     const stripeAmount = Math.max(finalAmount, 0.50);
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'cad',
             product_data: {
               name: serviceInfo.name,
               description: `Professional ${serviceInfo.name} service for ${bookingData.address || 'your property'}`,

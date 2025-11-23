@@ -46,14 +46,14 @@ export async function sendBookingConfirmationEmail(bookingData: any) {
 
   const serviceInfo = services[service] || { name: "Unknown Service", price: 0 };
 
-  const formatCurrency = (value?: number, currencyCode = 'USD') => {
-    const resolvedCurrency = currencyCode || 'USD';
+  const formatCurrency = (value?: number, currencyCode = 'CAD') => {
+    const resolvedCurrency = currencyCode || 'CAD';
     const amount = typeof value === 'number' ? value : Number(value);
     if (!amount || Number.isNaN(amount)) {
       return `-- ${resolvedCurrency}`;
     }
     try {
-      return new Intl.NumberFormat('en-US', {
+      return new Intl.NumberFormat('en-CA', {
         style: 'currency',
         currency: resolvedCurrency,
       }).format(amount);
@@ -100,9 +100,54 @@ export async function sendBookingConfirmationEmail(bookingData: any) {
   const formattedTime = formatTimeLabel(time);
   const safeAddress = address?.trim() || 'To be confirmed';
   const safeBookingRef = bookingRef || 'Pending-Reference';
-  const amountDisplay = formatCurrency(totalAmount ?? serviceInfo.price, currency || 'USD');
+  const amountDisplay = formatCurrency(totalAmount ?? serviceInfo.price, currency || 'CAD');
   const paymentStatusLabel = paymentStatus?.toUpperCase() === 'PAID' ? 'Paid' : (paymentStatus || 'Pending');
   const paymentMethodLabel = paymentMethod || 'Credit Card';
+
+  // Generate Google Calendar link
+  const generateGoogleCalendarLink = () => {
+    if (!date || !time) return null;
+
+    // Parse date and time
+    const eventDate = new Date(date);
+    
+    let hours = parseInt(time.match(/(\d+):/)?.[1] || '10');
+    const minutes = parseInt(time.match(/:(\d+)/)?.[1] || '0');
+    const isPM = time.toUpperCase().includes('PM');
+
+    if (isPM && hours !== 12) hours += 12;
+    if (!isPM && hours === 12) hours = 0;
+
+    eventDate.setHours(hours, minutes, 0, 0);
+    const endDate = new Date(eventDate);
+    endDate.setHours(endDate.getHours() + 2); // Default 2 hour duration
+
+    // Format dates for Google Calendar (YYYYMMDDTHHmmss)
+    const formatCalendarDate = (d: Date) => {
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(d.getUTCDate()).padStart(2, '0');
+      const hour = String(d.getUTCHours()).padStart(2, '0');
+      const minute = String(d.getUTCMinutes()).padStart(2, '0');
+      const second = String(d.getUTCSeconds()).padStart(2, '0');
+      return `${year}${month}${day}T${hour}${minute}${second}Z`;
+    };
+
+    const startDateStr = formatCalendarDate(eventDate);
+    const endDateStr = formatCalendarDate(endDate);
+
+    // Google Calendar URL
+    const googleCalendarUrl = new URL('https://calendar.google.com/calendar/render');
+    googleCalendarUrl.searchParams.set('action', 'TEMPLATE');
+    googleCalendarUrl.searchParams.set('text', `${serviceInfo.name} - ${safeBookingRef}`);
+    googleCalendarUrl.searchParams.set('dates', `${startDateStr.replace(/Z$/, '')}/${endDateStr.replace(/Z$/, '')}`);
+    googleCalendarUrl.searchParams.set('details', `Service: ${serviceInfo.name}\nBooking Reference: ${safeBookingRef}\nLocation: ${safeAddress}\nContact: ${safeContact.phone}\nAmount: ${amountDisplay}\n\nSpecial Instructions: ${safeContact.notes || 'None'}`);
+    googleCalendarUrl.searchParams.set('location', safeAddress);
+
+    return googleCalendarUrl.toString();
+  };
+
+  const googleCalendarUrl = generateGoogleCalendarLink();
 
   // Email to customer
   const senderIdentity = `SneekCreateMedia <${process.env.RESEND_FROM_EMAIL!}>`;
@@ -202,24 +247,22 @@ export async function sendBookingConfirmationEmail(bookingData: any) {
                                   <p style="margin:0;font-size:15px;color:#64748b;">Method: <span style="color:#0f172a;">${paymentMethodLabel}</span></p>
                                 </td>
                               </tr>
-                              ${
-                                transactionId
-                                  ? `
+                              ${transactionId
+        ? `
                                     <tr>
                                       <td style="text-align:center;">
                                         <p style="margin:0;font-size:15px;color:#64748b;">Tx ID: <span style="color:#64748b;font-family:monospace;">${transactionId}</span></p>
                                       </td>
                                     </tr>
                                   `
-                                  : ""
-                              }
+        : ""
+      }
                             </table>
                           </td>
                         </tr>
                       </table>
-                      ${
-                        safeContact.notes
-                          ? `
+                      ${safeContact.notes
+        ? `
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
                               <tr>
                                 <td style="text-align:center;">
@@ -229,12 +272,25 @@ export async function sendBookingConfirmationEmail(bookingData: any) {
                               </tr>
                             </table>
                           `
-                          : ""
-                      }
+        : ""
+      }
+                      ${googleCalendarUrl ? `
+                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+                        <tr>
+                          <td style="text-align:center;">
+                            <p style="margin:0 0 16px;font-size:14px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Add to Calendar</p>
+                            <a href="${googleCalendarUrl}" target="_blank" style="display:inline-block;background-color:#4285f4;color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:6px;font-size:14px;font-weight:600;text-align:center;">
+                              📅 Add to Google Calendar
+                            </a>
+                            <p style="margin:16px 0 0;font-size:12px;color:#94a3b8;">Click to add this appointment to your Google Calendar</p>
+                          </td>
+                        </tr>
+                      </table>
+                      ` : ''}
                       <div style="border-top:1px solid #e2e8f0;padding-top:24px;text-align:center;">
                         <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#475569;">If you have any questions or need to make changes to your booking, please don't hesitate to contact us.</p>
                         <p style="margin:0;font-size:15px;line-height:1.6;color:#475569;">We look forward to working with you!</p>
-                      </div>
+                </div>
                     </td>
                   </tr>
                   <tr>

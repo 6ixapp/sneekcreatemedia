@@ -8,7 +8,7 @@ function PaymentSuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const bookingRef = searchParams.get('booking_ref')
-  
+
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [paymentDetails, setPaymentDetails] = useState<any>(null)
   const [emailStatus, setEmailStatus] = useState<'sending' | 'sent' | 'error'>('sending')
@@ -35,7 +35,7 @@ function PaymentSuccessContent() {
 
       if (response.ok) {
         const result = await response.json()
-        
+
         // Check if payment was actually successful
         if (result.success && result.paymentDetails?.payment_status === 'paid') {
           setPaymentDetails(result.paymentDetails)
@@ -163,7 +163,7 @@ function PaymentSuccessContent() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Amount Paid:</span>
-                        <span className="font-medium">${(paymentDetails.amount_total / 100).toFixed(2)} USD</span>
+                        <span className="font-medium">${(paymentDetails.amount_total / 100).toFixed(2)} {paymentDetails.currency?.toUpperCase() || 'CAD'}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Payment Method:</span>

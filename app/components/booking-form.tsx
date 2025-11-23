@@ -19,8 +19,32 @@ export function BookingForm({
   bookingData: any
   setBookingData: (data: any) => void
 }) {
+  // Validation logic for each step
+  const isStepValid = () => {
+    switch (step) {
+      case 1:
+        return bookingData.service !== null
+      case 2:
+        return bookingData.address !== null && bookingData.address !== ""
+      case 3:
+        return bookingData.date !== null && bookingData.time !== null
+      case 4:
+        return (
+          bookingData.contact.name !== "" &&
+          bookingData.contact.phone !== "" &&
+          bookingData.contact.email !== ""
+        )
+      case 5:
+        return true // Payment step can proceed
+      case 6:
+        return true // Confirmation step
+      default:
+        return false
+    }
+  }
+
   const handleNext = () => {
-    if (step < 6) {
+    if (step < 6 && isStepValid()) {
       setStep(step + 1)
     }
   }
@@ -79,7 +103,7 @@ export function BookingForm({
           Previous
         </Button>
         {step < 6 ? (
-          <Button onClick={handleNext} className="ml-auto">
+          <Button onClick={handleNext} disabled={!isStepValid()} className="ml-auto">
             Next
           </Button>
         ) : (
