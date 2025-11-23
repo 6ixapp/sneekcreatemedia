@@ -296,8 +296,8 @@ export async function sendBookingConfirmationEmail(bookingData: any) {
                   <tr>
                     <td style="padding:32px 0;text-align:center;">
                       <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#0f172a;">Sneek Create Media</p>
-                      <p style="margin:0 0 4px;font-size:13px;color:#64748b;">support@sneekcreatemedia.com</p>
-                      <p style="margin:0;font-size:13px;color:#64748b;">1-800-SNEEK-CM</p>
+                      <p style="margin:0 0 4px;font-size:13px;color:#64748b;">harshaan@sneekcreatemedia.com</p>
+                      <p style="margin:0;font-size:13px;color:#64748b;">+1 (368) 399-4500</p>
                     </td>
                   </tr>
                 </table>
