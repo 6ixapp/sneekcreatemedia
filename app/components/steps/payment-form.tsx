@@ -19,7 +19,7 @@ export function PaymentForm({
   promoCode,
   onPromoCodeChange,
   bookingData,
-  totalAmount = 20, // TEMPORARY: Changed to ₹20 for INR testing (was 299.99)
+  totalAmount = 50, // TEMPORARY: Changed to ₹50 for INR testing (meets Stripe minimum of $0.50 USD)
   onPaymentSuccess,
 }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -59,8 +59,12 @@ export function PaymentForm({
       });
 
       if (response.ok) {
-        const { checkoutUrl } = await response.json();
-        window.location.href = checkoutUrl;
+        const data = await response.json();
+        if (!data.checkoutUrl) {
+          throw new Error('Checkout URL not received from server');
+        }
+        // Redirect to Stripe checkout
+        window.location.href = data.checkoutUrl;
       } else {
         const error = await response.json();
         throw new Error(error.error || 'Failed to create checkout session');

@@ -3,8 +3,6 @@ import Stripe from 'stripe';
 import { getSessionStatus, markSessionAsProcessed } from '@/lib/idempotency';
 import { sendBookingConfirmationEmail } from '@/lib/email';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 /**
  * This endpoint retrieves payment session details for display on the success page.
  * 
@@ -15,6 +13,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
  */
 export async function POST(request: NextRequest) {
   try {
+    // Validate Stripe key is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('❌ CRITICAL: STRIPE_SECRET_KEY is not set');
+      return NextResponse.json(
+        { error: 'Payment system configuration error. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    // Initialize Stripe client with validated key
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const { sessionId } = await request.json();
 
     if (!sessionId) {

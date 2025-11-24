@@ -1,26 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// Validate required environment variables
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('❌ CRITICAL: STRIPE_SECRET_KEY is not set');
-}
-
-if (!process.env.NEXT_PUBLIC_APP_URL) {
-  console.error('❌ CRITICAL: NEXT_PUBLIC_APP_URL is not set');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export async function POST(request: NextRequest) {
   try {
     // Validate Stripe key is configured
     if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('❌ CRITICAL: STRIPE_SECRET_KEY is not set');
       return NextResponse.json(
         { error: 'Payment system configuration error. Please contact support.' },
         { status: 500 }
       );
     }
+
+    // Validate NEXT_PUBLIC_APP_URL is configured
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
+      console.error('❌ CRITICAL: NEXT_PUBLIC_APP_URL is not set');
+      return NextResponse.json(
+        { error: 'Application URL is not configured. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    // Initialize Stripe client with validated key
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const { bookingData, totalAmount } = await request.json();
 
     // Validate required fields
@@ -54,18 +56,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Service names and prices mapping - TEMPORARY TEST PRICING (₹20 INR)
+    // Service names and prices mapping - TEMPORARY TEST PRICING (₹50 INR - meets Stripe minimum)
     // ⚠️ TODO: RESTORE ORIGINAL CAD PRICES FROM ORIGINAL_PRICES_BACKUP.md AFTER TESTING
+    // Note: ₹50 INR meets Stripe's $0.50 USD requirement (converts to ~$0.60 USD)
     const services: Record<string, { name: string; price: number }> = {
-      "mls-package": { name: "MLS Package", price: 20 },
-      "mls-social-package": { name: "MLS + Social Package", price: 20 },
-      "mls-sc-prime-package": { name: "MLS + SC Prime Package", price: 20 },
-      hdr: { name: "HDR Photos", price: 20 },
-      "3d-tour-rms": { name: "3D Tour & RMS", price: 20 },
-      "essential-video": { name: "Essential Video", price: 20 },
-      "sc-prime-reel": { name: "SC Prime Reel", price: 20 },
-      "possession-video": { name: "Possession Video", price: 20 },
-      drone: { name: "Drone Photos", price: 20 },
+      "mls-package": { name: "MLS Package", price: 50 },
+      "mls-social-package": { name: "MLS + Social Package", price: 50 },
+      "mls-sc-prime-package": { name: "MLS + SC Prime Package", price: 50 },
+      hdr: { name: "HDR Photos", price: 50 },
+      "3d-tour-rms": { name: "3D Tour & RMS", price: 50 },
+      "essential-video": { name: "Essential Video", price: 50 },
+      "sc-prime-reel": { name: "SC Prime Reel", price: 50 },
+      "possession-video": { name: "Possession Video", price: 50 },
+      drone: { name: "Drone Photos", price: 50 },
     };
 
     const serviceInfo = services[bookingData.service];
@@ -82,17 +85,23 @@ export async function POST(request: NextRequest) {
     // Validate and calculate final amount
     const finalAmount = totalAmount || serviceInfo.price;
 
+    // Stripe minimum requirements:
+    // - For INR: Minimum ₹50 (converts to ~$0.60 USD, meets Stripe's $0.50 USD global minimum)
+    // - For CAD: Minimum $0.50 CAD
+    const currency = 'inr'; // Current currency (TEMPORARY: for testing)
+    const minAmount = currency === 'inr' ? 50 : 0.50; // ₹50 INR or $0.50 CAD
+    
     // Validate amount range
-    if (finalAmount < 0.50 || finalAmount > 100000) {
+    if (finalAmount < minAmount || finalAmount > 100000) {
+      const currencySymbol = currency === 'inr' ? '₹' : '$';
       return NextResponse.json(
-        { error: 'Invalid amount. Minimum charge is ₹0.50 INR' },
+        { error: `Invalid amount. Minimum charge is ${currencySymbol}${minAmount} ${currency.toUpperCase()}` },
         { status: 400 }
       );
     }
 
-    // Stripe requires minimum ₹0.50 for INR charges
     // Ensure amount meets minimum requirement
-    const stripeAmount = Math.max(finalAmount, 0.50);
+    const stripeAmount = Math.max(finalAmount, minAmount);
 
     // Validate date if provided
     if (bookingData.date) {
@@ -113,7 +122,7 @@ export async function POST(request: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: 'inr', // TEMPORARY: Changed to INR for testing
+            currency: currency, // Use currency variable (currently 'inr' for testing)
             product_data: {
               name: serviceInfo.name,
               description: `Professional ${serviceInfo.name} service for ${bookingData.address || 'your property'}`,
@@ -155,6 +164,15 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Validate checkout URL was generated
+    if (!session.url) {
+      console.error('❌ Stripe checkout session created but URL is missing:', session.id);
+      return NextResponse.json(
+        { error: 'Failed to generate checkout URL. Please try again.' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
