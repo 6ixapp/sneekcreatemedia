@@ -19,7 +19,7 @@ export function PaymentForm({
   promoCode,
   onPromoCodeChange,
   bookingData,
-  totalAmount = 299.99,
+  totalAmount = 20, // TEMPORARY: Changed to ₹20 for INR testing (was 299.99)
   onPaymentSuccess,
 }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -99,7 +99,7 @@ export function PaymentForm({
               <div className="border-t pt-2 mt-2">
                 <div className="flex justify-between font-semibold">
                   <span>Total:</span>
-                  <span>${totalAmount}</span>
+                  <span>₹{totalAmount}</span>
                 </div>
               </div>
             </div>
@@ -157,7 +157,7 @@ export function PaymentForm({
       </div>
 
       <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
-        {isProcessing ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
+        {isProcessing ? "Processing..." : `Pay ₹${totalAmount.toFixed(2)}`}
       </Button>
     </div>
   )
