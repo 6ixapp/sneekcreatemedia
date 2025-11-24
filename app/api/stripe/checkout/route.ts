@@ -54,17 +54,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Service names and prices mapping - Production pricing
+    // Service names and prices mapping - TEMPORARY TEST PRICING (₹20 INR)
+    // ⚠️ TODO: RESTORE ORIGINAL CAD PRICES FROM ORIGINAL_PRICES_BACKUP.md AFTER TESTING
     const services: Record<string, { name: string; price: number }> = {
-      "mls-package": { name: "MLS Package", price: 250 },
-      "mls-social-package": { name: "MLS + Social Package", price: 475 },
-      "mls-sc-prime-package": { name: "MLS + SC Prime Package", price: 675 },
-      hdr: { name: "HDR Photos", price: 250 },
-      "3d-tour-rms": { name: "3D Tour & RMS", price: 100 },
-      "essential-video": { name: "Essential Video", price: 300 },
-      "sc-prime-reel": { name: "SC Prime Reel", price: 500 },
-      "possession-video": { name: "Possession Video", price: 300 },
-      drone: { name: "Drone Photos", price: 100 },
+      "mls-package": { name: "MLS Package", price: 20 },
+      "mls-social-package": { name: "MLS + Social Package", price: 20 },
+      "mls-sc-prime-package": { name: "MLS + SC Prime Package", price: 20 },
+      hdr: { name: "HDR Photos", price: 20 },
+      "3d-tour-rms": { name: "3D Tour & RMS", price: 20 },
+      "essential-video": { name: "Essential Video", price: 20 },
+      "sc-prime-reel": { name: "SC Prime Reel", price: 20 },
+      "possession-video": { name: "Possession Video", price: 20 },
+      drone: { name: "Drone Photos", price: 20 },
     };
 
     const serviceInfo = services[bookingData.service];
@@ -84,12 +85,12 @@ export async function POST(request: NextRequest) {
     // Validate amount range
     if (finalAmount < 0.50 || finalAmount > 100000) {
       return NextResponse.json(
-        { error: 'Invalid amount. Minimum charge is $0.50 USD' },
+        { error: 'Invalid amount. Minimum charge is ₹0.50 INR' },
         { status: 400 }
       );
     }
 
-    // Stripe requires minimum $0.50 (50 cents) for charges
+    // Stripe requires minimum ₹0.50 for INR charges
     // Ensure amount meets minimum requirement
     const stripeAmount = Math.max(finalAmount, 0.50);
 
@@ -112,14 +113,14 @@ export async function POST(request: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: 'cad',
+            currency: 'inr', // TEMPORARY: Changed to INR for testing
             product_data: {
               name: serviceInfo.name,
               description: `Professional ${serviceInfo.name} service for ${bookingData.address || 'your property'}`,
               // TODO: Add actual service images or remove images array
               // images: ['https://yourdomain.com/images/services/service-name.jpg'],
             },
-            unit_amount: Math.round(stripeAmount * 100), // Convert to cents (minimum 1 cent for Stripe)
+            unit_amount: Math.round(stripeAmount * 100), // Convert to paise (minimum 1 paise for Stripe)
           },
           quantity: 1,
         },
