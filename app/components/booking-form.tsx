@@ -62,6 +62,22 @@ export function BookingForm({
     }
   }
 
+  // Calculate total amount based on selected service (Production CAD prices)
+  const calculateTotalAmount = () => {
+    const servicePrices: Record<string, number> = {
+      "mls-package": 250,
+      "mls-social-package": 475,
+      "mls-sc-prime-package": 675,
+      hdr: 250,
+      "3d-tour-rms": 100,
+      "essential-video": 300,
+      "sc-prime-reel": 500,
+      "possession-video": 300,
+      drone: 100,
+    };
+    return servicePrices[bookingData.service] || 0;
+  }
+
   return (
     <div className="space-y-8">
       {step === 1 && (
@@ -93,6 +109,7 @@ export function BookingForm({
           promoCode={bookingData.promoCode}
           onPromoCodeChange={(promoCode) => setBookingData({ ...bookingData, promoCode })}
           bookingData={bookingData}
+          totalAmount={calculateTotalAmount()}
         />
       )}
       {step === 6 && <Confirmation bookingData={bookingData} />}

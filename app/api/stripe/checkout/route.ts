@@ -56,19 +56,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Service names and prices mapping - TEMPORARY TEST PRICING (₹50 INR - meets Stripe minimum)
-    // ⚠️ TODO: RESTORE ORIGINAL CAD PRICES FROM ORIGINAL_PRICES_BACKUP.md AFTER TESTING
-    // Note: ₹50 INR meets Stripe's $0.50 USD requirement (converts to ~$0.60 USD)
+    // Service names and prices mapping - PRODUCTION PRICING (CAD)
     const services: Record<string, { name: string; price: number }> = {
-      "mls-package": { name: "MLS Package", price: 50 },
-      "mls-social-package": { name: "MLS + Social Package", price: 50 },
-      "mls-sc-prime-package": { name: "MLS + SC Prime Package", price: 50 },
-      hdr: { name: "HDR Photos", price: 50 },
-      "3d-tour-rms": { name: "3D Tour & RMS", price: 50 },
-      "essential-video": { name: "Essential Video", price: 50 },
-      "sc-prime-reel": { name: "SC Prime Reel", price: 50 },
-      "possession-video": { name: "Possession Video", price: 50 },
-      drone: { name: "Drone Photos", price: 50 },
+      "mls-package": { name: "MLS Package", price: 250 },
+      "mls-social-package": { name: "MLS + Social Package", price: 475 },
+      "mls-sc-prime-package": { name: "MLS + SC Prime Package", price: 675 },
+      hdr: { name: "HDR Photos", price: 250 },
+      "3d-tour-rms": { name: "3D Tour & RMS", price: 100 },
+      "essential-video": { name: "Essential Video", price: 300 },
+      "sc-prime-reel": { name: "SC Prime Reel", price: 500 },
+      "possession-video": { name: "Possession Video", price: 300 },
+      drone: { name: "Drone Photos", price: 100 },
     };
 
     const serviceInfo = services[bookingData.service];
@@ -85,17 +83,14 @@ export async function POST(request: NextRequest) {
     // Validate and calculate final amount
     const finalAmount = totalAmount || serviceInfo.price;
 
-    // Stripe minimum requirements:
-    // - For INR: Minimum ₹50 (converts to ~$0.60 USD, meets Stripe's $0.50 USD global minimum)
-    // - For CAD: Minimum $0.50 CAD
-    const currency = 'inr'; // Current currency (TEMPORARY: for testing)
-    const minAmount = currency === 'inr' ? 50 : 0.50; // ₹50 INR or $0.50 CAD
-    
+    // Stripe minimum requirements - Production currency (CAD)
+    const currency = 'cad';
+    const minAmount = 0.50; // $0.50 CAD minimum
+
     // Validate amount range
     if (finalAmount < minAmount || finalAmount > 100000) {
-      const currencySymbol = currency === 'inr' ? '₹' : '$';
       return NextResponse.json(
-        { error: `Invalid amount. Minimum charge is ${currencySymbol}${minAmount} ${currency.toUpperCase()}` },
+        { error: `Invalid amount. Minimum charge is $${minAmount} CAD` },
         { status: 400 }
       );
     }
@@ -122,14 +117,12 @@ export async function POST(request: NextRequest) {
       line_items: [
         {
           price_data: {
-            currency: currency, // Use currency variable (currently 'inr' for testing)
+            currency: currency,
             product_data: {
               name: serviceInfo.name,
               description: `Professional ${serviceInfo.name} service for ${bookingData.address || 'your property'}`,
-              // TODO: Add actual service images or remove images array
-              // images: ['https://yourdomain.com/images/services/service-name.jpg'],
             },
-            unit_amount: Math.round(stripeAmount * 100), // Convert to paise (minimum 1 paise for Stripe)
+            unit_amount: Math.round(stripeAmount * 100), // Convert to cents
           },
           quantity: 1,
         },
@@ -149,8 +142,8 @@ export async function POST(request: NextRequest) {
         customer_email: bookingData.contact.email,
         customer_phone: bookingData.contact?.phone || '',
         notes: bookingData.contact?.notes || '',
-        total_amount: finalAmount.toString(), // Store original amount in metadata
-        stripe_amount: stripeAmount.toString(), // Store Stripe amount (may be different if rounded up)
+        total_amount: finalAmount.toString(),
+        stripe_amount: stripeAmount.toString(),
       },
       // Add invoice creation for record keeping
       invoice_creation: {

@@ -19,7 +19,7 @@ export function PaymentForm({
   promoCode,
   onPromoCodeChange,
   bookingData,
-  totalAmount = 50, // TEMPORARY: Changed to ₹50 for INR testing (meets Stripe minimum of $0.50 USD)
+  totalAmount = 0, // Production: Amount calculated from selected service
   onPaymentSuccess,
 }: PaymentFormProps) {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -103,7 +103,7 @@ export function PaymentForm({
               <div className="border-t pt-2 mt-2">
                 <div className="flex justify-between font-semibold">
                   <span>Total:</span>
-                  <span>₹{totalAmount}</span>
+                  <span>${totalAmount}</span>
                 </div>
               </div>
             </div>
@@ -161,7 +161,7 @@ export function PaymentForm({
       </div>
 
       <Button onClick={handlePayment} disabled={isProcessing} className="w-full" size="lg">
-        {isProcessing ? "Processing..." : `Pay ₹${totalAmount.toFixed(2)}`}
+        {isProcessing ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
       </Button>
     </div>
   )
